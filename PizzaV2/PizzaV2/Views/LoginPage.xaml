@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="PizzaV2.Views.LoginPage"
+             Shell.NavBarIsVisible="False">
+    <ContentPage.Content>
+        <ScrollView>
+                <StackLayout>
+                    <Grid Margin="20,0,20,0" VerticalOptions="CenterAndExpand">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <StackLayout Grid.Row="0">
+                            <Entry Placeholder="Login" FontSize="16" x:Name="login"/> 
+                        </StackLayout>
+                    
+                        <StackLayout Grid.Row="1">
+                            <Entry Placeholder="Mot de passe" IsPassword="True" FontSize="16" x:Name="mdp"/> 
+                        </StackLayout>
+                    
+                        <StackLayout Grid.Row="2">
+                            <Button Text="Se connecter" BackgroundColor="#0077be" TextColor="White" Clicked="Button_OnClicked_Login"/> 
+                        </StackLayout>
+                    
+                        <StackLayout Grid.Row="3">
+                            <Button Text="Inscription" Clicked="Button_OnClicked_Inscription"/> 
+                        </StackLayout>
+                    </Grid>
+                
+                </StackLayout>
+            
+            
+            </ScrollView>
+    </ContentPage.Content>
+</ContentPage>
