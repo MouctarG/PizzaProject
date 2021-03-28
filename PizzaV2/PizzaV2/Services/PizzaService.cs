@@ -59,18 +59,16 @@ namespace PizzaIllico.Services
                 string contentResponse = await response.Content.ReadAsStringAsync();
 
     
-                CodeUpdatePassword code =  JsonConvert.DeserializeObject<CodeUpdatePassword>(contentResponse);
+                GetLoginData code =  JsonConvert.DeserializeObject<GetLoginData>(contentResponse);
 
-                return code.error_code;
+                return code.is_success;
 
 
                
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(@"\tERROR {0}", ex.Message);
-                
-                Debug.WriteLine("IMPOSSIBLE Connect", ex.Message);
+
 
                 return false;
             }
@@ -97,10 +95,10 @@ namespace PizzaIllico.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                  //  var jsonString = await response.Content.ReadAsStringAsync();
+               
                     loginData=  JsonConvert.DeserializeObject<GetLoginData>(contentResponse);
 
-                 //    = JsonSerializer.Deserialize<GetLoginData>(response.);
+             
                     Debug.WriteLine(@"\tTodoItem successfully saved.");
                 }
                 else return null;
@@ -118,41 +116,35 @@ namespace PizzaIllico.Services
 
         public void GetAllPizzaria(Action<List<ItemPizzaria>> action)
         {
-       
-            
-            List<ItemPizzaria> itemPizzarias = new List<ItemPizzaria>();
+         List<ItemPizzaria> itemPizzarias = new List<ItemPizzaria>();
 
             using (var webclient = new WebClient())
             {
-
-                // Thread Main (UI)
-                //pizzasJson = webclient.DownloadString(URL);
 
                 Console.WriteLine("ETAPE 2");
 
                 webclient.DownloadStringCompleted += (object sender, DownloadStringCompletedEventArgs e) =>
                 {
-                    //
+              
                     Console.WriteLine("ETAPE 5");
 
-                    //Console.WriteLine("Données téléchargées: " + e.Result);
                     try
                     {
                         string pizzasJson = e.Result;
 
                         Pizzaria pizzaria = JsonConvert.DeserializeObject<Pizzaria>(pizzasJson);
 
-                        //
+                    
 
                         Device.BeginInvokeOnMainThread(() => { action.Invoke(pizzaria.data); });
 
                     }
                     catch (Exception ex)
                     {
-                        // Thread réseau
+                       
                         Device.BeginInvokeOnMainThread(() =>
                         {
-                           // DisplayAlert("Erreur", "Une erreur réseau s'est produite: " + ex.Message, "OK");
+                         
                             action.Invoke(null);
                         });
                     }
@@ -170,14 +162,13 @@ namespace PizzaIllico.Services
 
             using (var webclient = new WebClient())
             {
-                Console.WriteLine("ETAPE 2");
-
+      
                 webclient.DownloadStringCompleted += (object sender, DownloadStringCompletedEventArgs e) =>
                 {
-                    //
-                    Console.WriteLine("ETAPE 5");
+                  
+                 
 
-                    //Console.WriteLine("Données téléchargées: " + e.Result);
+                  
                     try
                     {
                         string pizzasJson = e.Result;
@@ -190,10 +181,10 @@ namespace PizzaIllico.Services
                     }
                     catch (Exception ex)
                     {
-                        // Thread réseau
+                     
                         Device.BeginInvokeOnMainThread(() =>
                         {
-                            // DisplayAlert("Erreur", "Une erreur réseau s'est produite: " + ex.Message, "OK");
+                          
                             action.Invoke(null);
                         });
                     }
@@ -226,17 +217,15 @@ namespace PizzaIllico.Services
                 response = await client.SendAsync(request);
           
                 string contentResponse = await response.Content.ReadAsStringAsync();
-                CodeUpdatePassword code =  JsonConvert.DeserializeObject<CodeUpdatePassword>(contentResponse);
+                GetLoginData code =  JsonConvert.DeserializeObject<GetLoginData>(contentResponse);
 
-                return code.error_code;
+                return code.is_success;
 
 
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(@"\tERROR {0}", ex.Message);
-                
-                Debug.WriteLine("IMPOSSIBLE Connect", ex.Message);
+           
 
                 return false;
             }
@@ -373,36 +362,45 @@ namespace PizzaIllico.Services
     
         public async Task<string> GetAuthentificationToken(Login login)
         {
-         
-           
-            var key = login.login;
-          
-            //Dev handles checking if cache is expired
-            if(!Barrel.Current.IsExpired(key))
+
+            try
             {
-                var   d =Barrel.Current.Get<GetLoginData>(key: key);
-                 return d.data.access_token;
-            }
-            else if (Barrel.Current.Exists(key) && Barrel.Current.IsExpired(key: key))
-            {
-                GetLoginData loginDataRes = Barrel.Current.Get<GetLoginData>(key: key);
-                loginDataRes = await RefreshToken(loginDataRes.data.refresh_token);
-                if (loginDataRes != null)
+                var key = login.login;
+                //Dev handles checking if cache is expired
+                if(!Barrel.Current.IsExpired(key))
                 {
-                    Barrel.Current.Add(key: key, data: loginDataRes, expireIn: TimeSpan.FromSeconds(loginDataRes.data.expires_in));
-                    return loginDataRes.data.access_token;
+                    var   d =Barrel.Current.Get<GetLoginData>(key: key);
+                    return d.data.access_token;
                 }
+                else if (Barrel.Current.Exists(key) && Barrel.Current.IsExpired(key: key))
+                {
+                    GetLoginData loginDataRes = Barrel.Current.Get<GetLoginData>(key: key);
+                    loginDataRes = await RefreshToken(loginDataRes.data.refresh_token);
+                    if (loginDataRes != null)
+                    {
+                        Barrel.Current.Add(key: key, data: loginDataRes, expireIn: TimeSpan.FromSeconds(loginDataRes.data.expires_in));
+                        return loginDataRes.data.access_token;
+                    }
              
-            }
+                }
 
 
-            //Saves the cache and pass it a timespan for expiration
+                //Saves the cache and pass it a timespan for expiration
          
     
-            GetLoginData dataUser=  await GetTokenLogin(login);
-            //Barrel.Current.Add(key: key, data: dataUser, expireIn: TimeSpan.FromSeconds(dataUser.data.expires_in));
-            Barrel.Current.Add(key: key, data: dataUser, expireIn: TimeSpan.FromSeconds(5));
-            return dataUser.data.access_token;
+                GetLoginData dataUser=  await GetTokenLogin(login);
+           
+                Barrel.Current.Add(key: key, data: dataUser, expireIn: TimeSpan.FromSeconds(5));
+                return dataUser.data.access_token;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+           
+        
+          
+         
 
         }
         
@@ -429,10 +427,10 @@ namespace PizzaIllico.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    //  var jsonString = await response.Content.ReadAsStringAsync();
+                   
                     loginData=  JsonConvert.DeserializeObject<GetLoginData>(contentResponse);
 
-                    //    = JsonSerializer.Deserialize<GetLoginData>(response.);
+                
                     Debug.WriteLine(@"\tTodoItem successfully saved.");
                 }
                 else return null;
@@ -440,9 +438,7 @@ namespace PizzaIllico.Services
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(@"\tERROR {0}", ex.Message);
-                
-                Debug.WriteLine("IMPOSSIBLE Connect", ex.Message);
+              
             }
 
             return loginData;
@@ -476,8 +472,8 @@ namespace PizzaIllico.Services
            if (pizzerias == null ) return;
            pizzerias.Sort((p1, p2) =>
            {
-               if (p1 == null) return (p2 == null) ? 1 : 0;      // si p2 existe il est plus proche que null
-               else if (p2 == null) return 1;                     // p1 plus proche que null
+               if (p1 == null) return (p2 == null) ? 1 : 0;      
+               else if (p2 == null) return 1;                    
                else
                {
                    double res = p2.minutes_per_kilometer - p1.minutes_per_kilometer;
@@ -518,9 +514,7 @@ namespace PizzaIllico.Services
            }
            catch (Exception ex)
            {
-               Debug.WriteLine(@"\tERROR {0}", ex.Message);
-                
-               Debug.WriteLine("IMPOSSIBLE Connect", ex.Message);
+              
            }
 
            return loginData;
@@ -557,9 +551,7 @@ namespace PizzaIllico.Services
            }
            catch (Exception ex)
            {
-               Debug.WriteLine(@"\tERROR {0}", ex.Message);
-                
-               Debug.WriteLine("IMPOSSIBLE Connect", ex.Message);
+           
 
                return false;
            }

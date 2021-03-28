@@ -11,8 +11,6 @@ namespace PizzaV2
         public AppShell()
         {
             InitializeComponent();
-            //   Routing.RegisterRoute(nameof(MainMenuPage), typeof(MainMenuPage));
-          //  Routing.RegisterRoute(nameof(NewItemPage), typeof(NewItemPage));
         }
 
         private async void GoToLogOut(object sender, EventArgs e)

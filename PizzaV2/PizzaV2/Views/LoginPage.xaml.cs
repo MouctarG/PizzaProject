@@ -46,10 +46,6 @@ namespace PizzaV2.Views
                     if (Barrel.Current.Exists(login.login))
                     {
                         App.PizzaManager.SaveLoginInProperties(login);
-                        await DisplayAlert("Alert", "Existe", "OK");
-                        // await Navigation.PushAsync(new MainMenuPage());
-                        // await Navigation.PushAsync(new MainMenuPage());
-
                         await Navigation.PopAsync();
            
                         
@@ -57,7 +53,6 @@ namespace PizzaV2.Views
                     else
                     {
                         App.PizzaManager.SaveLoginInProperties(login);
-                        await DisplayAlert("Alert", "Nouveau creer", "OK");
                         await App.PizzaManager.GetAuthentificationToken(login);
                        // await Navigation.PopAsync();
                        await Navigation.PopAsync();

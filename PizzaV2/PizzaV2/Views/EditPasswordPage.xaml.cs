@@ -41,6 +41,11 @@ namespace PizzaV2.Views
                     UpdatePassword updatePassword = new UpdatePassword(old_password.Text, new_password.Text);
                     string token = await  App.PizzaManager.GetAuthentificationToken(login) ;
                     waitLayout.IsVisible = true;
+                    if (string.IsNullOrEmpty(token))
+                    {
+                        await DisplayAlert("Alert", "Veuillez vous connecter à votre", "OK");
+                        await Navigation.PopAsync();
+                    }
                     bool b = await App.PizzaManager.UpdatePassword(updatePassword, token);
 
                     if (b)

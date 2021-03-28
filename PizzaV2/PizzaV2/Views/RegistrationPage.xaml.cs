@@ -95,6 +95,11 @@ namespace PizzaV2.Views
            
 
                         string token_2 = await App.PizzaManager.GetAuthentificationToken(login);
+                        if (string.IsNullOrEmpty(token_2))
+                        {
+                            await DisplayAlert("Alert", "Veuillez vous connecter à votre", "OK");
+                            await Navigation.PopAsync();
+                        }
                         bool b = await App.PizzaManager.UpdateProfil(user,token_2);
                         if (b)
                         {
